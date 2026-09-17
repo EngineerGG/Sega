@@ -15,7 +15,9 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
+        
         /* Стили для меню */
         #menu {
             display: flex;
@@ -26,6 +28,7 @@
             padding: 20px;
             box-sizing: border-box;
         }
+        
         h1 {
             color: #00ffcc;
             text-shadow: 2px 2px #ff00cc;
@@ -33,6 +36,7 @@
             margin-bottom: 30px;
             font-size: 24px;
         }
+        
         .game-btn {
             background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
             border: 2px solid #00ffcc;
@@ -47,11 +51,13 @@
             transition: all 0.2s;
             text-align: left;
         }
+        
         .game-btn:active {
             background: #00ffcc;
             color: #000;
             transform: scale(0.98);
         }
+        
         .game-btn span {
             float: right;
             opacity: 0.7;
@@ -60,20 +66,26 @@
 
         /* Стили для игры */
         #game-container {
-            display: none; /* Скрыто по умолчанию */
+            display: none;
             width: 100%;
             max-width: 640px;
             flex-direction: column;
             align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
         }
+        
         #game {
             width: 100%;
             aspect-ratio: 4 / 3;
             background: #000;
+            border: 2px solid #00ffcc;
+            border-radius: 4px;
         }
+        
         #back-btn {
             margin-top: 15px;
-            padding: 10px 20px;
+            padding: 12px 24px;
             background: #ff0055;
             color: white;
             border: none;
@@ -81,6 +93,11 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        #back-btn:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
@@ -89,11 +106,11 @@
     <!-- Меню выбора игр -->
     <div id="menu">
         <h1>🎮 SEGA MEGA DRIVE</h1>
-        <button class="game-btn" onclick="startGame('dune.gen')">Dune: The Battle for Arrakis <span>▶</span></button>
-        <button class="game-btn" onclick="startGame('gley_lancer.gen')">Advanced Busterhawk Gley Lancer <span>▶</span></button>
+        <button class="game-btn" onclick="startGame('roadrash3.gen')">Road Rash 3 <span>▶</span></button>
+        <button class="game-btn" onclick="startGame('dune.gen')">Dune: Battle for Arrakis <span>▶</span></button>
+        <button class="game-btn" onclick="startGame('gley_lancer.gen')">Gley Lancer <span>▶</span></button>
         <button class="game-btn" onclick="startGame('battletech.gen')">BattleTech: Armored Combat <span>▶</span></button>
         <button class="game-btn" onclick="startGame('comix_zone.gen')">Comix Zone <span>▶</span></button>
-        <button class="game-btn" onclick="startGame('roadrash3.gen')">Road Rash 3 <span>▶</span></button>
         <button class="game-btn" onclick="startGame('nba_jam.gen')">NBA Jam: Tournament Ed. <span>▶</span></button>
     </div>
 
@@ -104,38 +121,80 @@
     </div>
 
     <script>
-        // Проверяем, есть ли в адресной строке параметр ?game=filename.gen
+        // Проверяем параметр в URL
         const urlParams = new URLSearchParams(window.location.search);
         const gameToLoad = urlParams.get('game');
 
         if (gameToLoad) {
-            // Если игра указана в URL, сразу запускаем её
             document.getElementById('menu').style.display = 'none';
             document.getElementById('game-container').style.display = 'flex';
             
-            // Настраиваем эмулятор
+            // ========== НАСТРОЙКИ ЭМУЛЯТОРА ==========
+            
+            // Базовые настройки
             window.EJS_player = '#game';
             window.EJS_gameUrl = gameToLoad;
             window.EJS_core = 'segaMD';
             window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
             window.EJS_startOnLoaded = true;
             window.EJS_color = '#00ffcc';
+            window.EJS_lang = 'ru';
+            
+            // ========== НАСТРОЙКИ ВИРТУАЛЬНОГО ГЕЙМПАДА ==========
+            
+            // Включаем виртуальный геймпад для мобильных устройств
+            window.EJS_gamepad = true;
+            
+            // Размер кнопок геймпада (в пикселях)
+            // Для мобильных рекомендуется 60-80px для комфортного нажатия
+            window.EJS_gamepadSize = 70;
+            
+            // Прозрачность геймпада (0.0 - 1.0)
+            // 0.3-0.5 оптимально: видно кнопки, но не закрывают обзор
+            window.EJS_gamepadOpacity = 0.4;
+            
+            // Позиция D-pad (стрелки) - слева внизу
+            // Формат: {x: проценты_слева, y: проценты_снизу}
+            window.EJS_gamepadDpadPosition = {
+                x: 5,   // 5% от левого края
+                y: 10   // 10% от нижнего края
+            };
+            
+            // Позиция кнопок действий (A, B, C) - справа внизу
+            window.EJS_gamepadButtonsPosition = {
+                x: 75,  // 75% от левого края (справа)
+                y: 10   // 10% от нижнего края
+            };
+            
+            // Позиция кнопки Start - по центру внизу
+            window.EJS_gamepadStartPosition = {
+                x: 45,  // Почти по центру
+                y: 5    // 5% от нижнего края
+            };
+            
+            // Цвета кнопок (можно настроить под стиль)
+            window.EJS_gamepadDpadColor = '#00ffcc';
+            window.EJS_gamepadButtonsColor = '#ff00cc';
+            window.EJS_gamepadStartColor = '#ffff00';
+            
+            // Вибрация при нажатии (если поддерживается устройством)
+            window.EJS_gamepadVibration = true;
+            
+            // Показывать подсказки кнопок (A, B, C, START)
+            window.EJS_gamepadShowLabels = true;
         }
 
-        // Функция запуска игры из меню
+        // Функция запуска игры
         function startGame(romFile) {
-            // Перезагружаем страницу с параметром ?game=...
             window.location.href = window.location.pathname + '?game=' + romFile;
         }
 
         // Функция возврата в меню
         function goBack() {
-            // Убираем параметр ?game= и перезагружаем страницу
             window.location.href = window.location.pathname;
         }
     </script>
 
-    <!-- Скрипт загрузчика EmulatorJS (загружается всегда, но запустится только если настроен) -->
     <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
 </body>
 </html>
