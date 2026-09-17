@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sega Mega Drive Collection</title>
     <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        
         body {
             margin: 0;
             padding: 0;
@@ -18,7 +25,7 @@
             overflow-x: hidden;
         }
         
-        /* Стили для меню */
+        /* ========== МЕНЮ ========== */
         #menu {
             display: flex;
             flex-direction: column;
@@ -26,7 +33,6 @@
             width: 100%;
             max-width: 400px;
             padding: 20px;
-            box-sizing: border-box;
         }
         
         h1 {
@@ -64,7 +70,7 @@
             font-size: 14px;
         }
 
-        /* Стили для игры */
+        /* ========== ЭКРАН ИГРЫ ========== */
         #game-container {
             display: none;
             width: 100%;
@@ -72,31 +78,170 @@
             flex-direction: column;
             align-items: center;
             padding: 10px;
-            box-sizing: border-box;
+            height: 100vh;
         }
         
+        /* Контейнер для canvas эмулятора - занимает верхнюю часть */
         #game {
             width: 100%;
+            max-height: 55vh; /* Игра занимает 55% высоты экрана */
             aspect-ratio: 4 / 3;
             background: #000;
             border: 2px solid #00ffcc;
             border-radius: 4px;
+            margin-bottom: 10px;
         }
         
         #back-btn {
-            margin-top: 15px;
-            padding: 12px 24px;
+            padding: 8px 16px;
             background: #ff0055;
             color: white;
             border: none;
             border-radius: 5px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
         }
         
-        #back-btn:active {
+        /* ========== КАСТОМНЫЙ ГЕЙМПАД ========== */
+        #custom-gamepad {
+            width: 100%;
+            max-width: 640px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            flex-grow: 1;
+        }
+        
+        /* D-Pad (стрелки) */
+        .dpad {
+            position: relative;
+            width: 140px;
+            height: 140px;
+        }
+        
+        .dpad-btn {
+            position: absolute;
+            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+            border: 2px solid #00ffcc;
+            color: #00ffcc;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        
+        .dpad-btn:active, .dpad-btn.pressed {
+            background: #00ffcc;
+            color: #000;
+            transform: scale(0.95);
+        }
+        
+        .dpad-up {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 45px;
+            height: 45px;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .dpad-down {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 45px;
+            height: 45px;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .dpad-left {
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            border-radius: 8px 0 0 8px;
+        }
+        
+        .dpad-right {
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .dpad-center {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 45px;
+            height: 45px;
+            background: #1e1e1e;
+            border: 2px solid #00ffcc;
+        }
+        
+        /* Кнопки действий A, B, C, Start */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .action-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .action-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+            border: 2px solid #ff00cc;
+            color: #ff00cc;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s;
+        }
+        
+        .action-btn:active, .action-btn.pressed {
+            background: #ff00cc;
+            color: #000;
+            transform: scale(0.9);
+        }
+        
+        .start-btn {
+            width: 80px;
+            height: 35px;
+            border-radius: 18px;
+            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
+            border: 2px solid #ffff00;
+            color: #ffff00;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.1s;
+            margin-top: 10px;
+        }
+        
+        .start-btn:active, .start-btn.pressed {
+            background: #ffff00;
+            color: #000;
             transform: scale(0.95);
         }
     </style>
@@ -116,8 +261,32 @@
 
     <!-- Контейнер для игры -->
     <div id="game-container">
+        <button id="back-btn" onclick="goBack()">⬅ Меню</button>
+        
+        <!-- Эмулятор -->
         <div id="game"></div>
-        <button id="back-btn" onclick="goBack()">⬅ Вернуться в меню</button>
+        
+        <!-- Кастомный геймпад ПОД игрой -->
+        <div id="custom-gamepad">
+            <!-- D-Pad слева -->
+            <div class="dpad">
+                <div class="dpad-btn dpad-up" data-key="ArrowUp">▲</div>
+                <div class="dpad-btn dpad-down" data-key="ArrowDown">▼</div>
+                <div class="dpad-btn dpad-left" data-key="ArrowLeft">◀</div>
+                <div class="dpad-btn dpad-right" data-key="ArrowRight">▶</div>
+                <div class="dpad-center"></div>
+            </div>
+            
+            <!-- Кнопки действий справа -->
+            <div class="action-buttons">
+                <div class="action-row">
+                    <div class="action-btn" data-key="a">A</div>
+                    <div class="action-btn" data-key="b">B</div>
+                    <div class="action-btn" data-key="c">C</div>
+                </div>
+                <div class="start-btn" data-key="Enter">START</div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -129,9 +298,7 @@
             document.getElementById('menu').style.display = 'none';
             document.getElementById('game-container').style.display = 'flex';
             
-            // ========== НАСТРОЙКИ ЭМУЛЯТОРА ==========
-            
-            // Базовые настройки
+            // Настройки эмулятора
             window.EJS_player = '#game';
             window.EJS_gameUrl = gameToLoad;
             window.EJS_core = 'segaMD';
@@ -140,48 +307,75 @@
             window.EJS_color = '#00ffcc';
             window.EJS_lang = 'ru';
             
-            // ========== НАСТРОЙКИ ВИРТУАЛЬНОГО ГЕЙМПАДА ==========
+            // ОТКЛЮЧАЕМ стандартный геймпад EmulatorJS
+            window.EJS_gamepad = false;
             
-            // Включаем виртуальный геймпад для мобильных устройств
-            window.EJS_gamepad = true;
+            // ========== НАСТРОЙКА КАСТОМНОГО ГЕЙМПАДА ==========
             
-            // Размер кнопок геймпада (в пикселях)
-            // Для мобильных рекомендуется 60-80px для комфортного нажатия
-            window.EJS_gamepadSize = 70;
+            // Функция отправки нажатия клавиши в эмулятор
+            function sendKeyPress(key, pressed) {
+                const event = new KeyboardEvent(pressed ? 'keydown' : 'keyup', {
+                    key: key,
+                    code: key,
+                    keyCode: key.charCodeAt(0),
+                    which: key.charCodeAt(0),
+                    bubbles: true,
+                    cancelable: true
+                });
+                document.dispatchEvent(event);
+            }
             
-            // Прозрачность геймпада (0.0 - 1.0)
-            // 0.3-0.5 оптимально: видно кнопки, но не закрывают обзор
-            window.EJS_gamepadOpacity = 0.4;
+            // Привязываем события ко всем кнопкам геймпада
+            const buttons = document.querySelectorAll('[data-key]');
             
-            // Позиция D-pad (стрелки) - слева внизу
-            // Формат: {x: проценты_слева, y: проценты_снизу}
-            window.EJS_gamepadDpadPosition = {
-                x: 5,   // 5% от левого края
-                y: 10   // 10% от нижнего края
-            };
+            buttons.forEach(btn => {
+                const key = btn.getAttribute('data-key');
+                
+                // Touch события (для мобильных)
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    btn.classList.add('pressed');
+                    sendKeyPress(key, true);
+                    if (navigator.vibrate) navigator.vibrate(20);
+                });
+                
+                btn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    btn.classList.remove('pressed');
+                    sendKeyPress(key, false);
+                });
+                
+                btn.addEventListener('touchcancel', (e) => {
+                    e.preventDefault();
+                    btn.classList.remove('pressed');
+                    sendKeyPress(key, false);
+                });
+                
+                // Mouse события (для десктопа)
+                btn.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    btn.classList.add('pressed');
+                    sendKeyPress(key, true);
+                });
+                
+                btn.addEventListener('mouseup', (e) => {
+                    e.preventDefault();
+                    btn.classList.remove('pressed');
+                    sendKeyPress(key, false);
+                });
+                
+                btn.addEventListener('mouseleave', (e) => {
+                    btn.classList.remove('pressed');
+                    sendKeyPress(key, false);
+                });
+            });
             
-            // Позиция кнопок действий (A, B, C) - справа внизу
-            window.EJS_gamepadButtonsPosition = {
-                x: 75,  // 75% от левого края (справа)
-                y: 10   // 10% от нижнего края
-            };
-            
-            // Позиция кнопки Start - по центру внизу
-            window.EJS_gamepadStartPosition = {
-                x: 45,  // Почти по центру
-                y: 5    // 5% от нижнего края
-            };
-            
-            // Цвета кнопок (можно настроить под стиль)
-            window.EJS_gamepadDpadColor = '#00ffcc';
-            window.EJS_gamepadButtonsColor = '#ff00cc';
-            window.EJS_gamepadStartColor = '#ffff00';
-            
-            // Вибрация при нажатии (если поддерживается устройством)
-            window.EJS_gamepadVibration = true;
-            
-            // Показывать подсказки кнопок (A, B, C, START)
-            window.EJS_gamepadShowLabels = true;
+            // Предотвращаем стандартное поведение touch-событий на всей странице
+            document.addEventListener('touchmove', (e) => {
+                if (e.target.closest('#custom-gamepad')) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
         }
 
         // Функция запуска игры
