@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Road Rash 3</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #game {
+            width: 100%;
+            max-width: 640px;
+            aspect-ratio: 4 / 3;
+            background: #000;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game"></div>
+
+    <script>
+        // Настройки эмулятора
+        var EJS_player = '#game';
+        
+        // ВНИМАНИЕ: Замени 'roadrash3.gen' на ТОЧНОЕ имя твоего файла!
+        var EJS_gameUrl = 'roadrash3.gen'; 
+        
+        var EJS_core = 'segaMD'; // Ядро Sega Mega Drive
+        var EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+        var EJS_color = '#2d3436'; // Цвет элементов управления
+        var EJS_startOnLoaded = true; // Запускать сразу
+    </script>
+    
+    <!-- Скрипт загрузчика EmulatorJS -->
+    <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
+</body>
+</html>
