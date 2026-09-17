@@ -3,44 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Road Rash 3</title>
+    <title>Sega Mega Drive Collection</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #1a1a1a;
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Courier New', Courier, monospace;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+        }
+        /* Стили для меню */
+        #menu {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #00ffcc;
+            text-shadow: 2px 2px #ff00cc;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        .game-btn {
+            background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
+            border: 2px solid #00ffcc;
+            color: #fff;
+            padding: 15px 20px;
+            margin: 8px 0;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        .game-btn:active {
+            background: #00ffcc;
+            color: #000;
+            transform: scale(0.98);
+        }
+        .game-btn span {
+            float: right;
+            opacity: 0.7;
+            font-size: 14px;
+        }
+
+        /* Стили для игры */
+        #game-container {
+            display: none; /* Скрыто по умолчанию */
+            width: 100%;
+            max-width: 640px;
+            flex-direction: column;
+            align-items: center;
         }
         #game {
             width: 100%;
-            max-width: 640px;
             aspect-ratio: 4 / 3;
             background: #000;
+        }
+        #back-btn {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #ff0055;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <div id="game"></div>
+    <!-- Меню выбора игр -->
+    <div id="menu">
+        <h1>🎮 SEGA MEGA DRIVE</h1>
+        <button class="game-btn" onclick="startGame('dune.gen')">Dune: The Battle for Arrakis <span>▶</span></button>
+        <button class="game-btn" onclick="startGame('gley_lancer.gen')">Advanced Busterhawk Gley Lancer <span>▶</span></button>
+        <button class="game-btn" onclick="startGame('battletech.gen')">BattleTech: Armored Combat <span>▶</span></button>
+        <button class="game-btn" onclick="startGame('comix_zone.gen')">Comix Zone <span>▶</span></button>
+        <button class="game-btn" onclick="startGame('nba_jam.gen')">NBA Jam: Tournament Ed. <span>▶</span></button>
+    </div>
+
+    <!-- Контейнер для игры -->
+    <div id="game-container">
+        <div id="game"></div>
+        <button id="back-btn" onclick="goBack()">⬅ Вернуться в меню</button>
+    </div>
 
     <script>
-        // Настройки эмулятора
-        var EJS_player = '#game';
-        
-        // ВНИМАНИЕ: Замени 'roadrash3.gen' на ТОЧНОЕ имя твоего файла!
-        var EJS_gameUrl = 'roadrash3.gen'; 
-        
-        var EJS_core = 'segaMD'; // Ядро Sega Mega Drive
-        var EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
-        var EJS_color = '#2d3436'; // Цвет элементов управления
-        var EJS_startOnLoaded = true; // Запускать сразу
+        // Проверяем, есть ли в адресной строке параметр ?game=filename.gen
+        const urlParams = new URLSearchParams(window.location.search);
+        const gameToLoad = urlParams.get('game');
+
+        if (gameToLoad) {
+            // Если игра указана в URL, сразу запускаем её
+            document.getElementById('menu').style.display = 'none';
+            document.getElementById('game-container').style.display = 'flex';
+            
+            // Настраиваем эмулятор
+            window.EJS_player = '#game';
+            window.EJS_gameUrl = gameToLoad;
+            window.EJS_core = 'segaMD';
+            window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+            window.EJS_startOnLoaded = true;
+            window.EJS_color = '#00ffcc';
+        }
+
+        // Функция запуска игры из меню
+        function startGame(romFile) {
+            // Перезагружаем страницу с параметром ?game=...
+            window.location.href = window.location.pathname + '?game=' + romFile;
+        }
+
+        // Функция возврата в меню
+        function goBack() {
+            // Убираем параметр ?game= и перезагружаем страницу
+            window.location.href = window.location.pathname;
+        }
     </script>
-    
-    <!-- Скрипт загрузчика EmulatorJS -->
+
+    <!-- Скрипт загрузчика EmulatorJS (загружается всегда, но запустится только если настроен) -->
     <script src="https://cdn.emulatorjs.org/stable/data/loader.js"></script>
 </body>
 </html>
