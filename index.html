@@ -3,28 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sega Mega Drive Collection</title>
+    <title>Sega Mega Drive 6-Button Collection</title>
     <style>
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
             -webkit-user-select: none;
+            touch-action: none;
         }
-        
+
         body {
             margin: 0;
             padding: 0;
-            background-color: #121212;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
             color: #ffffff;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: 'Arial', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
             overflow-x: hidden;
         }
-        
+
         /* ========== МЕНЮ ========== */
         #menu {
             display: flex;
@@ -34,40 +35,51 @@
             max-width: 400px;
             padding: 20px;
         }
-        
+
         h1 {
-            color: #00ffcc;
-            text-shadow: 2px 2px #ff00cc;
+            color: #4ecdc4;
+            text-shadow: 0 0 20px rgba(78, 205, 196, 0.6);
             text-align: center;
             margin-bottom: 30px;
             font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 2px;
         }
-        
+
+        .subtitle {
+            color: #ffd93d;
+            font-size: 14px;
+            margin-bottom: 20px;
+            text-align: center;
+            opacity: 0.8;
+        }
+
         .game-btn {
-            background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
-            border: 2px solid #00ffcc;
+            background: linear-gradient(145deg, #2a2a3e, #1a1a2e);
+            border: 2px solid #4ecdc4;
             color: #fff;
-            padding: 15px 20px;
+            padding: 16px 22px;
             margin: 8px 0;
             width: 100%;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
             text-align: left;
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.2);
         }
-        
+
         .game-btn:active {
-            background: #00ffcc;
-            color: #000;
-            transform: scale(0.98);
+            background: #4ecdc4;
+            color: #1a1a2e;
+            transform: translateY(2px);
         }
-        
+
         .game-btn span {
             float: right;
             opacity: 0.7;
-            font-size: 14px;
+            font-size: 18px;
         }
 
         /* ========== ЭКРАН ИГРЫ ========== */
@@ -77,313 +89,535 @@
             max-width: 640px;
             flex-direction: column;
             align-items: center;
-            padding: 10px;
+            padding: 8px;
             height: 100vh;
+            height: 100dvh;
         }
-        
-        /* Контейнер для canvas эмулятора - занимает верхнюю часть */
+
         #game {
             width: 100%;
-            max-height: 55vh; /* Игра занимает 55% высоты экрана */
+            max-height: 40vh;
             aspect-ratio: 4 / 3;
             background: #000;
-            border: 2px solid #00ffcc;
-            border-radius: 4px;
-            margin-bottom: 10px;
+            border: 3px solid #4ecdc4;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 0 25px rgba(78, 205, 196, 0.4);
         }
-        
+
         #back-btn {
-            padding: 8px 16px;
-            background: #ff0055;
+            padding: 6px 18px;
+            background: linear-gradient(145deg, #ff6b6b, #ee5a52);
             color: white;
             border: none;
-            border-radius: 5px;
-            font-size: 14px;
+            border-radius: 20px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
-        
-        /* ========== КАСТОМНЫЙ ГЕЙМПАД ========== */
-        #custom-gamepad {
+
+        /* ========== 6-BUTTON SEGA CONTROLLER ========== */
+        #sega-controller {
             width: 100%;
-            max-width: 640px;
+            max-width: 600px;
+            background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%);
+            border-radius: 25px;
+            padding: 20px 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 20px;
-            flex-grow: 1;
-        }
-        
-        /* D-Pad (стрелки) */
-        .dpad {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.7),
+                        inset 0 2px 10px rgba(255, 255, 255, 0.08),
+                        inset 0 -2px 10px rgba(0, 0, 0, 0.5);
             position: relative;
-            width: 140px;
-            height: 140px;
+            flex-grow: 1;
+            max-height: 50vh;
+            border: 1px solid #2a2a2a;
         }
-        
+
+        /* Логотип SEGA сверху */
+        #sega-controller::before {
+            content: 'SEGA';
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: bold;
+            color: #555;
+            letter-spacing: 4px;
+        }
+
+        /* ========== D-PAD (Крестовина) ========== */
+        .dpad-container {
+            position: relative;
+            width: 130px;
+            height: 130px;
+            flex-shrink: 0;
+        }
+
+        .dpad-base {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 130px;
+            height: 130px;
+            background: radial-gradient(circle, #2a2a2a 0%, #0a0a0a 100%);
+            border-radius: 50%;
+            box-shadow: inset 0 4px 15px rgba(0, 0, 0, 0.9),
+                        0 2px 5px rgba(255, 255, 255, 0.05);
+        }
+
         .dpad-btn {
             position: absolute;
-            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
-            border: 2px solid #00ffcc;
-            color: #00ffcc;
-            font-size: 24px;
+            background: linear-gradient(145deg, #3a3a3a, #1a1a1a);
+            color: #666;
+            font-size: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.1s;
+            transition: all 0.08s;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.6);
         }
-        
+
         .dpad-btn:active, .dpad-btn.pressed {
-            background: #00ffcc;
-            color: #000;
-            transform: scale(0.95);
+            background: linear-gradient(145deg, #4ecdc4, #2a9d96);
+            color: #fff;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.9),
+                        inset 0 2px 5px rgba(0, 0, 0, 0.4);
         }
-        
+
         .dpad-up {
-            top: 0;
+            top: 5px;
             left: 50%;
             transform: translateX(-50%);
-            width: 45px;
-            height: 45px;
-            border-radius: 8px 8px 0 0;
+            width: 40px;
+            height: 42px;
+            border-radius: 8px 8px 2px 2px;
         }
-        
+
         .dpad-down {
-            bottom: 0;
+            bottom: 5px;
             left: 50%;
             transform: translateX(-50%);
-            width: 45px;
-            height: 45px;
-            border-radius: 0 0 8px 8px;
+            width: 40px;
+            height: 42px;
+            border-radius: 2px 2px 8px 8px;
         }
-        
+
         .dpad-left {
-            left: 0;
+            left: 5px;
             top: 50%;
             transform: translateY(-50%);
-            width: 45px;
-            height: 45px;
-            border-radius: 8px 0 0 8px;
+            width: 42px;
+            height: 40px;
+            border-radius: 8px 2px 2px 8px;
         }
-        
+
         .dpad-right {
-            right: 0;
+            right: 5px;
             top: 50%;
             transform: translateY(-50%);
-            width: 45px;
-            height: 45px;
-            border-radius: 0 8px 8px 0;
+            width: 42px;
+            height: 40px;
+            border-radius: 2px 8px 8px 2px;
         }
-        
+
         .dpad-center {
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 45px;
-            height: 45px;
-            background: #1e1e1e;
-            border: 2px solid #00ffcc;
+            width: 40px;
+            height: 40px;
+            background: #1a1a1a;
+            border-radius: 3px;
+            pointer-events: none;
         }
-        
-        /* Кнопки действий A, B, C, Start */
-        .action-buttons {
+
+        /* ========== КНОПКИ ДЕЙСТВИЙ (6 кнопок) ========== */
+        .buttons-area {
             display: flex;
             flex-direction: column;
-            align-items: center;
+            align-items: flex-end;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        /* Верхний ряд: X, Y, Z */
+        .top-row {
+            display: flex;
+            gap: 10px;
+            margin-right: 5px;
+        }
+
+        /* Нижний ряд: A, B, C */
+        .bottom-row {
+            display: flex;
             gap: 10px;
         }
-        
-        .action-row {
+
+        .action-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #3a3a3a, #1a1a1a);
+            border: 3px solid #0a0a0a;
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.08s;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.7),
+                        inset 0 -2px 5px rgba(0, 0, 0, 0.4),
+                        inset 0 2px 3px rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        /* Подписи под кнопками */
+        .action-btn::after {
+            content: attr(data-label);
+            position: absolute;
+            bottom: -16px;
+            font-size: 9px;
+            color: #666;
+            font-weight: normal;
+            letter-spacing: 1px;
+        }
+
+        .action-btn:active, .action-btn.pressed {
+            background: linear-gradient(145deg, #ff6b6b, #c0392b);
+            transform: translateY(3px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.9),
+                        inset 0 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Цветовое различие для верхнего ряда (X, Y, Z) */
+        .action-btn.btn-x,
+        .action-btn.btn-y,
+        .action-btn.btn-z {
+            background: linear-gradient(145deg, #4a4a4a, #2a2a2a);
+        }
+
+        .action-btn.btn-x:active, .action-btn.btn-x.pressed,
+        .action-btn.btn-y:active, .action-btn.btn-y.pressed,
+        .action-btn.btn-z:active, .action-btn.btn-z.pressed {
+            background: linear-gradient(145deg, #ffd93d, #f39c12);
+            color: #1a1a1a;
+        }
+
+        /* ========== СИСТЕМНЫЕ КНОПКИ ========== */
+        .system-buttons {
             display: flex;
             gap: 15px;
-        }
-        
-        .action-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
-            border: 2px solid #ff00cc;
-            color: #ff00cc;
-            font-size: 20px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
+            margin-top: 25px;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.1s;
+            width: 100%;
         }
-        
-        .action-btn:active, .action-btn.pressed {
-            background: #ff00cc;
-            color: #000;
-            transform: scale(0.9);
-        }
-        
-        .start-btn {
-            width: 80px;
-            height: 35px;
+
+        .sys-btn {
+            padding: 8px 22px;
             border-radius: 18px;
-            background: linear-gradient(145deg, #2a2a2a, #1e1e1e);
-            border: 2px solid #ffff00;
-            color: #ffff00;
-            font-size: 12px;
+            background: linear-gradient(145deg, #3a3a3a, #1a1a1a);
+            border: 2px solid #0a0a0a;
+            color: #888;
+            font-size: 11px;
             font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             cursor: pointer;
-            transition: all 0.1s;
-            margin-top: 10px;
+            transition: all 0.08s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+            letter-spacing: 1.5px;
         }
-        
-        .start-btn:active, .start-btn.pressed {
-            background: #ffff00;
-            color: #000;
-            transform: scale(0.95);
+
+        .sys-btn:active, .sys-btn.pressed {
+            background: linear-gradient(145deg, #ffd93d, #f39c12);
+            color: #1a1a1a;
+            transform: translateY(2px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+        }
+
+        /* Индикатор режима MODE */
+        #mode-indicator {
+            position: absolute;
+            top: 25px;
+            right: 15px;
+            font-size: 9px;
+            color: #666;
+            letter-spacing: 1px;
+            padding: 3px 8px;
+            border: 1px solid #333;
+            border-radius: 10px;
+            background: #0a0a0a;
+            transition: all 0.2s;
+        }
+
+        #mode-indicator.active {
+            color: #ffd93d;
+            border-color: #ffd93d;
+            box-shadow: 0 0 10px rgba(255, 217, 61, 0.5);
         }
     </style>
 </head>
 <body>
 
-    <!-- Меню выбора игр -->
+    <!-- Меню -->
     <div id="menu">
         <h1>🎮 SEGA MEGA DRIVE</h1>
+        <div class="subtitle">6-BUTTON CONTROLLER</div>
         <button class="game-btn" onclick="startGame('roadrash3.gen')">Road Rash 3 <span>▶</span></button>
         <button class="game-btn" onclick="startGame('dune.gen')">Dune: Battle for Arrakis <span>▶</span></button>
         <button class="game-btn" onclick="startGame('gley_lancer.gen')">Gley Lancer <span>▶</span></button>
         <button class="game-btn" onclick="startGame('battletech.gen')">BattleTech: Armored Combat <span>▶</span></button>
         <button class="game-btn" onclick="startGame('comix_zone.gen')">Comix Zone <span>▶</span></button>
         <button class="game-btn" onclick="startGame('nba_jam.gen')">NBA Jam: Tournament Ed. <span>▶</span></button>
+        <button class="game-btn" onclick="startGame('mk3u.gen')">Ultimate Mortal Kombat 3 <span>▶</span></button>
     </div>
 
-    <!-- Контейнер для игры -->
+    <!-- Игра -->
     <div id="game-container">
         <button id="back-btn" onclick="goBack()">⬅ Меню</button>
-        
-        <!-- Эмулятор -->
         <div id="game"></div>
-        
-        <!-- Кастомный геймпад ПОД игрой -->
-        <div id="custom-gamepad">
-            <!-- D-Pad слева -->
-            <div class="dpad">
-                <div class="dpad-btn dpad-up" data-key="ArrowUp">▲</div>
-                <div class="dpad-btn dpad-down" data-key="ArrowDown">▼</div>
-                <div class="dpad-btn dpad-left" data-key="ArrowLeft">◀</div>
-                <div class="dpad-btn dpad-right" data-key="ArrowRight">▶</div>
+
+        <!-- 6-Button Sega Controller -->
+        <div id="sega-controller">
+            <div id="mode-indicator">MODE: 3-BTN</div>
+
+            <!-- Крестовина -->
+            <div class="dpad-container">
+                <div class="dpad-base"></div>
+                <div class="dpad-btn dpad-up" data-button="up">▲</div>
+                <div class="dpad-btn dpad-down" data-button="down">▼</div>
+                <div class="dpad-btn dpad-left" data-button="left">◀</div>
+                <div class="dpad-btn dpad-right" data-button="right">▶</div>
                 <div class="dpad-center"></div>
             </div>
-            
-            <!-- Кнопки действий справа -->
-            <div class="action-buttons">
-                <div class="action-row">
-                    <div class="action-btn" data-key="a">A</div>
-                    <div class="action-btn" data-key="b">B</div>
-                    <div class="action-btn" data-key="c">C</div>
+
+            <!-- 6 кнопок действий -->
+            <div class="buttons-area">
+                <!-- Верхний ряд: X, Y, Z -->
+                <div class="top-row">
+                    <div class="action-btn btn-x" data-button="x" data-label="X">X</div>
+                    <div class="action-btn btn-y" data-button="y" data-label="Y">Y</div>
+                    <div class="action-btn btn-z" data-button="z" data-label="Z">Z</div>
                 </div>
-                <div class="start-btn" data-key="Enter">START</div>
+                <!-- Нижний ряд: A, B, C -->
+                <div class="bottom-row">
+                    <div class="action-btn btn-a" data-button="a" data-label="A">A</div>
+                    <div class="action-btn btn-b" data-button="b" data-label="B">B</div>
+                    <div class="action-btn btn-c" data-button="c" data-label="C">C</div>
+                </div>
+                <!-- Системные кнопки -->
+                <div class="system-buttons">
+                    <div class="sys-btn" data-button="start">START</div>
+                    <div class="sys-btn" data-button="mode">MODE</div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Проверяем параметр в URL
         const urlParams = new URLSearchParams(window.location.search);
         const gameToLoad = urlParams.get('game');
 
         if (gameToLoad) {
             document.getElementById('menu').style.display = 'none';
             document.getElementById('game-container').style.display = 'flex';
-            
+
             // Настройки эмулятора
             window.EJS_player = '#game';
             window.EJS_gameUrl = gameToLoad;
             window.EJS_core = 'segaMD';
             window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
             window.EJS_startOnLoaded = true;
-            window.EJS_color = '#00ffcc';
+            window.EJS_color = '#4ecdc4';
             window.EJS_lang = 'ru';
-            
-            // ОТКЛЮЧАЕМ стандартный геймпад EmulatorJS
             window.EJS_gamepad = false;
-            
-            // ========== НАСТРОЙКА КАСТОМНОГО ГЕЙМПАДА ==========
-            
-            // Функция отправки нажатия клавиши в эмулятор
-            function sendKeyPress(key, pressed) {
-                const event = new KeyboardEvent(pressed ? 'keydown' : 'keyup', {
-                    key: key,
-                    code: key,
-                    keyCode: key.charCodeAt(0),
-                    which: key.charCodeAt(0),
+
+            // ========== ПРАВИЛЬНЫЙ МАППИНГ ДЛЯ 6-BUTTON SEGA ==========
+            // EmulatorJS (ядро Genesis Plus GX) использует эти клавиши:
+            // D-pad: стрелки
+            // A: X (KeyX, код 88)
+            // B: Z (KeyZ, код 90)
+            // C: C (KeyC, код 67)
+            // X: A (KeyA, код 65)
+            // Y: S (KeyS, код 83)
+            // Z: D (KeyD, код 68)
+            // Start: Enter (код 13)
+            // Mode: Q (KeyQ, код 86)
+            const KEY_MAP = {
+                'up':    { key: 'ArrowUp',    code: 'ArrowUp',    keyCode: 38 },
+                'down':  { key: 'ArrowDown',  code: 'ArrowDown',  keyCode: 40 },
+                'left':  { key: 'ArrowLeft',  code: 'ArrowLeft',  keyCode: 37 },
+                'right': { key: 'ArrowRight', code: 'ArrowRight', keyCode: 39 },
+                'b':     { key: 'x',          code: 'KeyX',       keyCode: 88 },
+                'c':     { key: 'z',          code: 'KeyZ',       keyCode: 90 },
+                'z':     { key: 'e',          code: 'KeyE',       keyCode: 69 },
+                'y':     { key: 'a',          code: 'KeyA',       keyCode: 65 },
+                'a':     { key: 's',          code: 'KeyS',       keyCode: 83 },
+                'x':     { key: 'q',          code: 'KeyQ',       keyCode: 81 },
+                'start': { key: 'Enter',      code: 'Enter',      keyCode: 13 },
+                'mode':  { key: 'v',          code: 'KeyV',       keyCode: 86 }
+            };
+
+            // ========== ОТПРАВКА КОМАНД В ЭМУЛЯТОР ==========
+            function sendButton(button, pressed) {
+                const keyInfo = KEY_MAP[button];
+                if (!keyInfo) return;
+
+                const eventType = pressed ? 'keydown' : 'keyup';
+
+                // 1. Пытаемся использовать прямой API эмулятора
+                try {
+                    if (window.EJS_emulator) {
+                        const gm = window.EJS_emulator.gameManager || 
+                                   window.EJS_emulator.module || 
+                                   window.EJS_emulator;
+                        
+                        // Пробуем разные варианты API
+                        if (gm.sendInput) {
+                            // Кнопки на 6-кнопочном геймпаде Sega:
+                            // 0=UP, 1=DOWN, 2=LEFT, 3=RIGHT, 4=B, 5=C, 6=A, 7=START,
+                            // 8=X, 9=Y, 10=Z, 11=MODE
+                            const buttonIds = {
+                                'up': 0, 'down': 1, 'left': 2, 'right': 3,
+                                'a': 4, 'b': 5, 'c': 6, 'start': 7,
+                                'x': 8, 'y': 9, 'z': 10, 'mode': 11
+                            };
+                            gm.sendInput(buttonIds[button], pressed ? 1 : 0);
+                            return;
+                        }
+                    }
+                } catch (e) {
+                    // Fallback на keyboard events
+                }
+
+                // 2. Fallback: KeyboardEvent на все возможные цели
+                const event = new KeyboardEvent(eventType, {
+                    key: keyInfo.key,
+                    code: keyInfo.code,
+                    keyCode: keyInfo.keyCode,
+                    which: keyInfo.keyCode,
                     bubbles: true,
-                    cancelable: true
+                    cancelable: true,
+                    composed: true
                 });
+
+                // Отправляем на все возможные цели
+                window.dispatchEvent(event);
                 document.dispatchEvent(event);
+                
+                const canvas = document.querySelector('#game canvas');
+                if (canvas) {
+                    canvas.dispatchEvent(new KeyboardEvent(eventType, {
+                        key: keyInfo.key,
+                        code: keyInfo.code,
+                        keyCode: keyInfo.keyCode,
+                        which: keyInfo.keyCode,
+                        bubbles: true,
+                        cancelable: true
+                    }));
+                }
             }
-            
-            // Привязываем события ко всем кнопкам геймпада
-            const buttons = document.querySelectorAll('[data-key]');
-            
-            buttons.forEach(btn => {
-                const key = btn.getAttribute('data-key');
-                
-                // Touch события (для мобильных)
-                btn.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    btn.classList.add('pressed');
-                    sendKeyPress(key, true);
-                    if (navigator.vibrate) navigator.vibrate(20);
+
+            // ========== ОБРАБОТКА КНОПОК ==========
+            function setupController() {
+                const buttons = document.querySelectorAll('[data-button]');
+                const modeIndicator = document.getElementById('mode-indicator');
+                let modeActive = false;
+
+                buttons.forEach(btn => {
+                    const button = btn.getAttribute('data-button');
+
+                    // Touch события (мобильные)
+                    btn.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        btn.classList.add('pressed');
+                        sendButton(button, true);
+                        if (navigator.vibrate) navigator.vibrate(15);
+
+                        // Обработка MODE — переключаем индикатор
+                        if (button === 'mode') {
+                            modeActive = !modeActive;
+                            if (modeActive) {
+                                modeIndicator.textContent = 'MODE: 6-BTN';
+                                modeIndicator.classList.add('active');
+                            } else {
+                                modeIndicator.textContent = 'MODE: 3-BTN';
+                                modeIndicator.classList.remove('active');
+                            }
+                        }
+                    }, { passive: false });
+
+                    btn.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        btn.classList.remove('pressed');
+                        sendButton(button, false);
+                    }, { passive: false });
+
+                    btn.addEventListener('touchcancel', (e) => {
+                        e.preventDefault();
+                        btn.classList.remove('pressed');
+                        sendButton(button, false);
+                    }, { passive: false });
+
+                    // Mouse события (десктоп)
+                    btn.addEventListener('mousedown', (e) => {
+                        e.preventDefault();
+                        btn.classList.add('pressed');
+                        sendButton(button, true);
+
+                        if (button === 'mode') {
+                            modeActive = !modeActive;
+                            if (modeActive) {
+                                modeIndicator.textContent = 'MODE: 6-BTN';
+                                modeIndicator.classList.add('active');
+                            } else {
+                                modeIndicator.textContent = 'MODE: 3-BTN';
+                                modeIndicator.classList.remove('active');
+                            }
+                        }
+                    });
+
+                    btn.addEventListener('mouseup', (e) => {
+                        e.preventDefault();
+                        btn.classList.remove('pressed');
+                        sendButton(button, false);
+                    });
+
+                    btn.addEventListener('mouseleave', () => {
+                        btn.classList.remove('pressed');
+                        sendButton(button, false);
+                    });
                 });
-                
-                btn.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    btn.classList.remove('pressed');
-                    sendKeyPress(key, false);
-                });
-                
-                btn.addEventListener('touchcancel', (e) => {
-                    e.preventDefault();
-                    btn.classList.remove('pressed');
-                    sendKeyPress(key, false);
-                });
-                
-                // Mouse события (для десктопа)
-                btn.addEventListener('mousedown', (e) => {
-                    e.preventDefault();
-                    btn.classList.add('pressed');
-                    sendKeyPress(key, true);
-                });
-                
-                btn.addEventListener('mouseup', (e) => {
-                    e.preventDefault();
-                    btn.classList.remove('pressed');
-                    sendKeyPress(key, false);
-                });
-                
-                btn.addEventListener('mouseleave', (e) => {
-                    btn.classList.remove('pressed');
-                    sendKeyPress(key, false);
-                });
-            });
-            
-            // Предотвращаем стандартное поведение touch-событий на всей странице
+            }
+
+            // Запускаем настройку с задержками (на случай если эмулятор перезаписывает обработчики)
+            setupController();
+            setTimeout(setupController, 1500);
+            setTimeout(setupController, 4000);
+            setTimeout(setupController, 8000);
+
+            // Блокируем скролл и зум на контроллере
             document.addEventListener('touchmove', (e) => {
-                if (e.target.closest('#custom-gamepad')) {
+                if (e.target.closest('#sega-controller')) {
                     e.preventDefault();
                 }
             }, { passive: false });
+
+            document.addEventListener('gesturestart', (e) => e.preventDefault());
         }
 
-        // Функция запуска игры
         function startGame(romFile) {
             window.location.href = window.location.pathname + '?game=' + romFile;
         }
 
-        // Функция возврата в меню
         function goBack() {
             window.location.href = window.location.pathname;
         }
